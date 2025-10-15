@@ -32,17 +32,31 @@ GM_addStyle (`
 }
 `);
 
+let drag = false;
+
 function select(enable) {
 	const table = document.getElementById('mwrsap');
 	if(!table) return;
 
-	const rows = table.querySelectorAll('div[class^="results_row__"]');
-	if(rows.length <= 1) return;
+  if(drag){
+    const rows = table.querySelectorAll('div[class^="draggable-coordinate-results_centerRow__"]');
+    if(rows.length <= 1) return;
 
-	for(let i = 1; i < rows.length; i++) {
-		if(rows[i].className.includes('results_selected__') === enable) continue;
-		rows[i].click();
+    for(let i = 0; i < rows.length; i++) {
+      if(rows[i].className.includes('draggable-coordinate-results_selected__') === enable) continue;
+      rows[i].click();
+  }
 	}
+
+  else{
+    const rows = table.querySelectorAll('div[class^="coordinate-results_row__"]');
+    if(rows.length <= 1) return;
+
+    for(let i = 0; i < rows.length; i++) {
+      if(rows[i].className.includes('coordinate-results_selected__') === enable) continue;
+      rows[i].click();
+  }
+  }
 }
 
 function selectAll() {
@@ -58,13 +72,30 @@ function init() {
 		const path = window.location.pathname;
 		if(!path.includes('/results/')) return;
 
-		const table = document.querySelector('div[class^="results_table__"]');
-		if(!table || table.id === 'mwrsap') return;
+    if(document.querySelector('div[class^="draggable-coordinate-results_table__"]') !== null) drag = true;
+    if(document.querySelector('div[class^="coordinate-results_table__"]') !== null) drag = false;
 
-		table.id = 'mwrsap';
+    let cell = null
 
-		const cell = table.querySelector('div[class*="results_headerRow__"] > div:first-child');
-		if(!cell) return;
+    if(!drag){
+        const table = document.querySelector('div[class^="coordinate-results_table__"]');
+        if(!table || table.id === 'mwrsap') return;
+
+        table.id = 'mwrsap';
+        cell = table.querySelector('div[class*="coordinate-results_headerRow__"] > div:first-child');
+        if(!cell) return;
+      }
+    else{
+      const table = document.querySelector('div[class^="draggable-coordinate-results_table__"]');
+      if(!table || table.id === 'mwrsap') return;
+
+      table.id = 'mwrsap';
+
+      cell = table.querySelector('div[class*="draggable-coordinate-results_headerSpacer__"]');
+      console.log(cell)
+      if(!cell) return;
+    }
+
 
 		const btnAll = document.createElement('div');
 		btnAll.className = 'mwrsap-button';
@@ -89,3 +120,4 @@ function init() {
 }
 
 init();
+
